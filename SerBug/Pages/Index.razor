@@ -1,0 +1,61 @@
+﻿@page "/"
+@using System.Runtime.InteropServices
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<p>
+    10 + 20 + 30 = @sum(10, 20, 30)
+</p>
+@code {
+    double sum(double a, double b, double c)
+    {
+        [DllImport("test")]
+        extern static double sum_double(double a, double b, double c);
+
+        [DllImport("test")]
+        extern static nint test_malloc_d3(double a, double b, double c);
+
+        [DllImport("test")]
+        extern static nint test_malloc_d2(double a, double b);
+
+        [DllImport("test")]
+        extern static nint test_malloc_d1(double a);
+
+        [DllImport("test")]
+        extern static nint test_malloc_f3(float a, float b, float c);
+
+        [DllImport("test")]
+        extern static nint test_malloc_df2(double a, float b);
+
+
+        [DllImport("test")]
+        extern static void test_free(nint mem);
+
+        // Runtime crash
+        var mem = test_malloc_d3(a, b, c);
+
+        // OK
+        // var mem = test_malloc_d1(a);
+
+        // Runtime crash
+        // var mem = test_malloc_d2(a, b);
+
+        // OK
+        // var mem = test_malloc_f3((float)a, (float)b, (float)c);
+
+        // Runtime crash
+        // var mem = test_malloc_df2(a, (float)b);
+
+        // OK
+        test_free(mem);
+
+        // OK
+        return sum_double(a, b, c);
+    }
+}
